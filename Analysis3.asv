@@ -23,34 +23,12 @@ for i=1:TotalNumBlocks
     DatabyLProbability.ReactionTime(:,i) = (results.ReactionTime(results.BlockNo == i)'); 
     DatabyLProbability.ReactionTimeLeft(:,i) = (results.ReactionTime(results.Direction == 1 & results.BlockNo == i)'); %left
     DatabyLProbability.ReactionTimeRight(:,i) = (results.ReactionTime(results.Direction == 2 & results.BlockNo == i)'); %right
+    % C
+    DatabyLProbability.MeanRT = mean(DatabyLProbability.ReactionTime,1);
+    DatabyLProbability.MeanRTLeft = mean(DatabyLProbability.ReactionTimeLeft,1);
+    DatabyLProbability.MeanRTRight = mean(DatabyLProbability.ReactionTimeRight,1);
     
-    DatabyLProbability.MeanRT = mean(DatabyLProbability.ReactionTime(:,i)
-    DatabyLProbability.MeanRTLeft
-    DatabyLProbability.MeanRTRight
     
-    %find the probability in this block and assign to TOP ROW of RTsbyLProbability
-    DatabyLProbability.Probabilities=LeftProbabilityArray;
-     
-    %take all the elements of Reaction Time where BlockNo==i
-    %assign this to the SECOND ROW of RTsbyLProbability
-   
-    DatabyLProbability.ReactionTime(:,i) = (results.ReactionTime(results.BlockNo == i)'); 
-%     DatabyLProbability.ReactionTimeLeft(:,i) = results.ReactionTime(results.Direction == 1 & results.BlockNo == i); %left
-%     DatabyLProbability.ReactionTimeRight(:,i) = results.ReactionTime(results.Direction == 2 & results.BlockNo == i);
-    
-    %assign meant RTs to the THIRD ROW of RTsbyLProbability
-%     DatabyLProbability.meanRT(i) = mean(DatabyLProbability{2,i});
-    
-    %assign Leftward RTs to the FOURTH ROW and Rightward RTs to the SIXTH
-    %ROW
-    %nb direction here refers to the direction of the stimulus, not the
-    %response
-     %right
-    
-    %mean Leftward RT in the FIFTH ROW and mean Rightward RT in the SEVENTH
-    %ROW
-%     DatabyLProbability{5,i} = mean(DatabyLProbability{4,i}); %Left
-%     DatabyLProbability{7,i} = mean(DatabyLProbability{6,i}); %Right
     
 end
 

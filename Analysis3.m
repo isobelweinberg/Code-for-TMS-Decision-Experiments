@@ -1,3 +1,4 @@
+%% NB
 %1 in the Direction variable means dots were moving left
 %2 in the Direction variable means dots were moving right
 
@@ -11,50 +12,42 @@ load D:\TMS-EMG\Kinetograms-Code\190215_Isobel_Weinberg.mat
 %% Find RTs by Probability
 %indexing RTs by block is the same as indexing by Probability
 
-
-%define empty structure???
-
-
 for i=1:TotalNumBlocks 
     % Resave probabilities in new structure
     DatabyLProbability.Probabilities=LeftProbabilityArray;
+    
     % Save reaction times by probability - columns are probabilities
     % Do the same for left and right RTs
     DatabyLProbability.ReactionTime(:,i) = (results.ReactionTime(results.BlockNo == i)'); 
     DatabyLProbability.ReactionTimeLeft(:,i) = (results.ReactionTime(results.Direction == 1 & results.BlockNo == i)'); %left
     DatabyLProbability.ReactionTimeRight(:,i) = (results.ReactionTime(results.Direction == 2 & results.BlockNo == i)'); %right
     
-    DatabyLProbability.MeanRT = mean(DatabyLProbability.ReactionTime(:,i)
-    DatabyLProbability.MeanRTLeft
-    DatabyLProbability.MeanRTRight
-    
-    %find the probability in this block and assign to TOP ROW of RTsbyLProbability
-    DatabyLProbability.Probabilities=LeftProbabilityArray;
-     
-    %take all the elements of Reaction Time where BlockNo==i
-    %assign this to the SECOND ROW of RTsbyLProbability
-   
-    DatabyLProbability.ReactionTime(:,i) = (results.ReactionTime(results.BlockNo == i)'); 
-%     DatabyLProbability.ReactionTimeLeft(:,i) = results.ReactionTime(results.Direction == 1 & results.BlockNo == i); %left
-%     DatabyLProbability.ReactionTimeRight(:,i) = results.ReactionTime(results.Direction == 2 & results.BlockNo == i);
-    
-    %assign meant RTs to the THIRD ROW of RTsbyLProbability
-%     DatabyLProbability.meanRT(i) = mean(DatabyLProbability{2,i});
-    
-    %assign Leftward RTs to the FOURTH ROW and Rightward RTs to the SIXTH
-    %ROW
-    %nb direction here refers to the direction of the stimulus, not the
-    %response
-     %right
-    
-    %mean Leftward RT in the FIFTH ROW and mean Rightward RT in the SEVENTH
-    %ROW
-%     DatabyLProbability{5,i} = mean(DatabyLProbability{4,i}); %Left
-%     DatabyLProbability{7,i} = mean(DatabyLProbability{6,i}); %Right
-    
+    % Calculate means for overall, left and right RTs
+    DatabyLProbability.MeanRT = mean(DatabyLProbability.ReactionTime,1);
+    DatabyLProbability.MeanRTLeft = mean(DatabyLProbability.ReactionTimeLeft,1); %left
+    DatabyLProbability.MeanRTRight = mean(DatabyLProbability.ReactionTimeRight,1);%right
+ 
 end
 
 %% Find RTs by Coherence
+for j=1:(numel(CoherenceArray))
+end
+
+% Save coherences in new structure
+    DatabyCoherence.Coherences=CoherenceArray;
+    
+    % Save reaction times by coherence - columns are coherences
+    % Do the same for left and right RTs
+    DatabyLProbability.ReactionTime(:,i) = (results.ReactionTime(results.BlockNo == i)'); 
+    DatabyLProbability.ReactionTimeLeft(:,i) = (results.ReactionTime(results.Direction == 1 & results.BlockNo == i)'); %left
+    DatabyLProbability.ReactionTimeRight(:,i) = (results.ReactionTime(results.Direction == 2 & results.BlockNo == i)'); %right
+    
+    % Calculate means for overall, left and right RTs
+    DatabyLProbability.MeanRT = mean(DatabyLProbability.ReactionTime,1);
+    DatabyLProbability.MeanRTLeft = mean(DatabyLProbability.ReactionTimeLeft,1); %left
+    DatabyLProbability.MeanRTRight = mean(DatabyLProbability.ReactionTimeRight,1);%right
+
+
 
 RTsbyCoherence=cell(7,numel(CoherenceArray)); %create emptyvariable
 

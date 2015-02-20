@@ -24,7 +24,7 @@ for i=1:TotalNumBlocks
     DatabyLProbability.ReactionTimeLeft(:,i) = (results.ReactionTime(results.Direction == 1 & results.BlockNo == i)'); %left
     DatabyLProbability.ReactionTimeRight(:,i) = (results.ReactionTime(results.Direction == 2 & results.BlockNo == i)'); %right
     
-    DatabyLProbability.MeanRT = mean(DatabyLProbability.ReactionTime(:,i)
+    DatabyLProbability.MeanRT = mean(DatabyLProbability.ReactionTime(:,i);
     DatabyLProbability.MeanRTLeft
     DatabyLProbability.MeanRTRight
     
