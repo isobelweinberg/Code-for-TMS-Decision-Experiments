@@ -1,0 +1,66 @@
+%% NB
+%1 in the Direction variable means dots were moving left
+%2 in the Direction variable means dots were moving right
+
+%1 in the Response variable means left keypress
+%2 in the Response variable means right keypress
+%3 in the Response variable means Escape was pressed
+%NaN in the Response variable means another key was pressed (pauses the experiment & when unpaused a new RDK is created)
+
+load D:\TMS-EMG\Kinetograms-Code\190215_Isobel_Weinberg.mat
+
+%% Find RTs by Probability
+%indexing RTs by block is the same as indexing by Probability
+
+% Resave probabilities in new structure
+DatabyLProbability.Probabilities=LeftProbabilityArray;
+
+for iProbability=1:TotalNumBlocks
+    
+    % Save reaction times by probability - each cell in cell array is a
+    % probability
+    % Do the same for left and right RTs 
+    DatabyLProbability.ReactionTime{1,iProbability} = (results.ReactionTime(results.BlockNo == iProbability)); %IS THIS RIGHT?
+    DatabyLProbability.ReactionTimeLeft{1,iProbability} = (results.ReactionTime(results.Direction == 1 & results.BlockNo == iProbability)); %left
+    DatabyLProbability.ReactionTimeRight{1,iProbability} = (results.ReactionTime(results.Direction == 2 & results.BlockNo == iProbability)); %right
+    DatabyLProbability.MeanRT(1, iProbability) = mean(DatabyLProbability.ReactionTime{1, iProbability});
+    DatabyLProbability.MeanRTLeft(1, iProbability) = mean(DatabyLProbability.ReactionTimeLeft{1, iProbability}); %left
+    DatabyLProbability.MeanRTRight(1, iProbability) = mean(DatabyLProbability.ReactionTimeRight{1, iProbability}); %right
+    DatabyLProbability.StandardDev(1, iProbability) = std(DatabyLProbability.ReactionTime{1, iProbability});
+    DatabyLProbability.StandardDevLeft(1, iProbability) = std(DatabyLProbability.ReactionTimeLeft{1,iProbability});
+    DatabyLProbability.StandardDevRight(1, iProbability) = std(DatabyLProbability.ReactionTimeRight{1,iProbability});
+end
+
+
+%% Find RTs by Coherence
+
+% Resave coherences in new structure
+DatabyCoherence.Probabilities=LeftProbabilityArray;
+
+for iProbability=1:TotalNumBlocks
+    
+    % Save reaction times by probability - each cell in cell array is a
+    % coherence
+    % Do the same for left and right RTs 
+    DatabyCoherence.ReactionTime{1,iProbability} = (results.ReactionTime(results.BlockNo == iProbability)); %IS THIS RIGHT?
+    DatabyCoherence.ReactionTimeLeft{1,iProbability} = (results.ReactionTime(results.Direction == 1 & results.BlockNo == iProbability)); %left
+    DatabyCoherence.ReactionTimeRight{1,iProbability} = (results.ReactionTime(results.Direction == 2 & results.BlockNo == iProbability)); %right
+    DatabyCoherence.MeanRT(1, iProbability) = mean(DatabyCoherence.ReactionTime{1, iProbability});
+    DatabyCoherence.MeanRTLeft(1, iProbability) = mean(DatabyCoherence.ReactionTimeLeft{1, iProbability}); %left
+    DatabyCoherence.MeanRTRight(1, iProbability) = mean(DatabyCoherence.ReactionTimeRight{1, iProbability}); %right
+    DatabyCoherence.StandardDev(1, iProbability) = std(DatabyCoherence.ReactionTime{1, iProbability});
+    DatabyCoherence.StandardDevLeft(1, iProbability) = std(DatabyCoherence.ReactionTimeLeft{1,iProbability});
+    DatabyCoherence.StandardDevRight(1, iProbability) = std(DatabyCoherence.ReactionTimeRight{1,iProbability});
+end
+
+%% Plot
+figure
+hold on
+bar(DatabyLProbability.Probabilities,DatabyLProbability.MeanRT);
+errorbar(DatabyLProbability.Probabilities, DatabyLProbability.MeanRT, DatabyLProbability.StandardDev, '.');
+for iProbability=1:TotalNumBlocks
+    LRinterspose(iProbability,1) = DatabyLProbability.MeanRTLeft(1,iProbability);
+    LRinterspose(iProbability,2) = DatabyLProbability.MeanRTRight(1,iProbability);
+end
+figure
+bar(DatabyLProbability.Probabilities,LRinterspose);
