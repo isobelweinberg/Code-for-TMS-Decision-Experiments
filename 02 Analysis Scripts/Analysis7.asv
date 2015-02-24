@@ -1,7 +1,7 @@
 %%inputs 
 datafile = 'D:\TMS-EMG\Code\Code-for-TMS-Decision-Experiments\01-Experiment-Scripts\190215_Isobel_Weinberg.mat'
 
-%% NB
+%% Notations
 %1 in the Direction variable means dots were moving left
 %2 in the Direction variable means dots were moving right
 
@@ -10,8 +10,11 @@ datafile = 'D:\TMS-EMG\Code\Code-for-TMS-Decision-Experiments\01-Experiment-Scri
 %3 in the Response variable means Escape was pressed
 %NaN in the Response variable means another key was pressed (pauses the experiment & when unpaused a new RDK is created)
 
+%% Load file
 load (datafile)
 
+%% RT existence check
+if isfield (results, 'ReactionTime')==1
 %% Find RTs by Probability
 %indexing RTs by block is the same as indexing by Probability
 
@@ -56,7 +59,9 @@ for iCoherence=1:(numel(CoherenceArray))
     DatabyCoherence.StandardDevRight(1, iCoherence) = std(DatabyCoherence.ReactionTimeRight{1,iCoherence});
 end
 
+
 %% Plot
+%probability vs mean RT
 figure
 hold on
 bar(DatabyLProbability.Probabilities,DatabyLProbability.MeanRT);
@@ -65,7 +70,7 @@ title('Mean Reaction Time by Probability')
 xlabel('Probability of Dots Going Left')
 ylabel('Mean Reaction Time')
 
-
+%probability vs mean RT, both hands
 LRinterspose = zeros(TotalNumBlocks,2);
 for iProbability=1:TotalNumBlocks
     LRinterspose(iProbability,1) = DatabyLProbability.MeanRTLeft(1,iProbability);
@@ -73,8 +78,15 @@ for iProbability=1:TotalNumBlocks
 end
 figure
 bar(DatabyLProbability.Probabilities,LRinterspose);
+title('Mean Reaction Time per hand by Probability')
+xlabel('Probability of Dots Going Left')
+ylabel('Mean Reaction Time')
 
+%coherence vs mean RT
 figure
 hold on
 bar(DatabyCoherence.Coherences,DatabyCoherence.MeanRT);
 errorbar(DatabyCoherence.Coherences, DatabyCoherence.MeanRT, DatabyCoherence.StandardDev, '.');
+title('Mean Reaction Time per hand by Coherence')
+xlabel('Percentage of Dots Moving Together')
+ylabel('Mean Reaction Time')
