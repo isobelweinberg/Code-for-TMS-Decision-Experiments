@@ -1,0 +1,16 @@
+
+for i=1:10
+    tstart=tic;
+    
+    outportb(888, 1); % turns lead labelled BIT 0 on
+    
+    time_taken_on(1,i)=toc(tstart)*1000; %in ms
+    wait(1);
+    
+    outportb(888, 0); %turns parallel port OFF
+    
+    time_taken_off=toc(tstart)*1000; %in ms
+    tend=toc;
+end
+
+%PTB -> GetSecs

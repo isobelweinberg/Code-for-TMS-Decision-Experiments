@@ -1,0 +1,32 @@
+function data_organised = sort_data_by(data, independent_variable, iv_values, index_options)
+
+for i = index_options
+    data_organised.all{1, i} = data(independent_variable == iv_values(1,i)); %e.g. sort RTs by coherence
+    data_organised.left{1, i} = data(independent_variable == iv_values(1,i)); %left
+    data_organised.right{1, i} = data(independent_variable == iv_values(1,i)); %rig
+    data_organised.mean(1, i) = mean(data(index_variable == i);
+
+end
+
+
+
+for iCoherence=1:(numel(CoherenceArray))
+        
+        % Save reaction times by probability - each cell in cell array is a
+        % coherence
+        % Do the same for left and right RTs
+        DatabyCoherence.ReactionTime{1,iCoherence} = (results.ReactionTime(results.Coherence == CoherenceArray(1,iCoherence)));
+        DatabyCoherence.ReactionTimeLeft{1,iCoherence} = (results.ReactionTime(results.Direction == 1 & results.Coherence == CoherenceArray(1,iCoherence))); %left
+        DatabyCoherence.ReactionTimeRight{1,iCoherence} = (results.ReactionTime(results.Direction == 2 & results.Coherence == CoherenceArray(1,iCoherence))); %right
+        DatabyCoherence.MeanRT(1, iCoherence) = mean(DatabyCoherence.ReactionTime{1, iCoherence});
+        DatabyCoherence.MeanRTLeft(1, iCoherence) = mean(DatabyCoherence.ReactionTimeLeft{1, iCoherence}); %left
+        DatabyCoherence.MeanRTRight(1, iCoherence) = mean(DatabyCoherence.ReactionTimeRight{1, iCoherence}); %right
+        DatabyCoherence.StandardDev(1, iCoherence) = std(DatabyCoherence.ReactionTime{1, iCoherence});
+        DatabyCoherence.StandardDevLeft(1, iCoherence) = std(DatabyCoherence.ReactionTimeLeft{1,iCoherence});
+        DatabyCoherence.StandardDevRight(1, iCoherence) = std(DatabyCoherence.ReactionTimeRight{1,iCoherence});
+    end
+
+% [RTsbyLProbability] = sort_data_by(results.ReactionTime, results.BlockNo, 1:TotalNumBlocks, 1:TotalNumBlocks)
+% 
+%  
+% [RTsbyCoherence] = sort_data_by(results.ReactionTime, results.Coherence, CoherenceArray, 1:numel(CoherenceArray))
