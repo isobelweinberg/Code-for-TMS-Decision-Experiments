@@ -1,11 +1,12 @@
 try
     %% Inputs
-    CoherenceArray
-    ProbabilityArray
-    TimepointsArray
+    CoherenceArray = [5 10 15 30 60]
+    LeftProbabilityArray = [10 30 50]
+    TimepointArray = [90 140 220] %in ms after onset of stimulus
+    TrialsPerBlock = 50
+    TotalNumBlocks = 5
     
-    %%
-    rng('shuffle');
+     rng('shuffle');
     
     %Upper Threshold
     UpperThreshold=10; %chosen for no particular reason
@@ -15,8 +16,8 @@ try
     
     for BlockNo = 1:TotalNumBlocks
         %choose a probability for the block
-        ProbIndex=randi(numel(ProbabilityArray));
-        PriorProbability=ProbabilityArray(1,ProbIndex)
+        ProbIndex=randi(numel(LeftProbabilityArray));
+        PriorProbability=LeftProbabilityArray(1,ProbIndex);
         
         for TrialNo = 1:TrialsPerBlock
             
@@ -33,29 +34,31 @@ try
             UpperThresholdNoise = randn;
             SamplingNoise = randn;
             
-            %% Calculating Parameters
-            RateOfRise = Coherence+RiseNoise;
-            StartingThreshold = PriorProbability+ LowerThresholdTNoise;
-            CurrentActivity = StartingThreshold+(RateofRise*Time);
-            
             %choose a timepoint for the trial
             TimepointIndex=randi(numel(TimepointArray));
             Timepoint=TimepointArray(1,TimepointIndex);
             
             time=Timepoint;
-            MEP=CurrentActivity + SamplingNoise;
+                        
+            %% Calculating Parameters
+            RateOfRise = Coherence+RiseNoise;
+            StartingThreshold = PriorProbability + LowerThresholdNoise;
+            CurrentActivity = StartingThreshold+(RateOfRise*time);
             
+            MEP=CurrentActivity + SamplingNoise;
+            Direction = randi(2);
+                       
             %store results
             results.BlockNo(1,TrialNo)=BlockNo;
             results.Coherence(1,TrialNo)=Coherence;
             results.Timepoint(1,TrialNo)=Timepoint;
             results.MEP(1,TrialNo)=MEP;
+            results.Direction=Direction;
                     
             
         end
     end
-     %% Plot
-     
+       
      
     
 catch err

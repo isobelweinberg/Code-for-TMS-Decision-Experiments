@@ -50,8 +50,8 @@ if isfield (results, 'ReactionTime')==1
         %coherence vs mean RT
         figure
         hold on
-        bar(DatabyCoherence.Coherences,DatabyCoherence.MeanRT);
-        errorbar(DatabyCoherence.Coherences, DatabyCoherence.MeanRT, DatabyCoherence.StandardDev, '.');
+        bar(variables.Coherences, RTsbycoherence.mean);
+        errorbar(variables.Coherences, RTsbycoherence.mean, RTsbycoherence.stddev, '.');
         title('Mean Reaction Time per hand by Coherence')
         xlabel('Percentage of Dots Moving Together')
         ylabel('Mean Reaction Time')
@@ -68,6 +68,12 @@ if isfield (results, 'MEP')==1
     [MEPsbyCoherence] = sort_data_by(results.MEP, results.Coherence, CoherenceArray, 1:numel(CoherenceArray));
     %Find MEPs by Timepoint
     %do something here
+    
+    
+    if plot==1
+        
+    end
 end
+
 
 
