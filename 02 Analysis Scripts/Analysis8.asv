@@ -74,14 +74,7 @@ if isfield (results, 'MEP')==1
     
     
     if plot==1
-        %MEPs vs timepoints
-        figure
-        hold on
-        bar(variables.Probabilities, MEPsbyLProbability.mean);
-        errorbar(variables.Probabilities, MEPsbyLProbability.mean, MEPsbyLProbability.stddev, '.');
-        title('MEPs by Probability')
-        xlabel('Probability of Dots Going Left')
-        ylabel('MEP')
+        
         
         
         
