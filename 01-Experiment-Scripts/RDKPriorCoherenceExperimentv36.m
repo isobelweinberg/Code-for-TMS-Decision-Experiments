@@ -11,14 +11,10 @@ try
     
     %% Experiment Type
     option.Training = 0;
-    option.TMS = 0;
+    option.TMS = 1;
     
     %% TMS Parameters
-%     TMS.dly = 1000; %TMS timepoint relative to stimulus parameters
-%     TMS.intl = 2;
-%     TMS.pre_rec = 100; %how many ms before TMS pulse to start recording
-%     TMS.port = 3; %which bit in the parallel port the TMS is taking orders from - FIND THIS OUT!
-%     TMS.triggerport = 1; %which bit in the parallel port the TMS talks to the trigger computer - FIND THIS OUT!
+
     
     %% Experimental Parameters
     TotalNumTrials=150;
@@ -29,6 +25,7 @@ try
     CoherenceArray=[5 10 15 30 60];%array of coherences you want to use, as a percentage
     LeftProbabilityArray=[10 30 50]; %probability the RDK goes left, as a percentage
     TrialsPerBlock=50;
+    TMSTimepointArray = [50 100]%in ms
     %FixedDuration=1; %1 for yes, 0 for no
     %FixedDurationLengths=[400 1000]
     
@@ -89,23 +86,22 @@ try
     results.ReactionTime=zeros(1,TotalNumTrials);
     
     
-    if option.TMS == 1
-        %startportb(888); %???does this function exist?
-        start_cogent;
-    end
-    
+%     if option.TMS == 1
+%         %startportb(888); %???does this function exist?
+%         start_cogent;
+%     end
+%     
     % Check for filename clash - MAKE SURE THIS IS UNCOMMENTED FOR THE
     % EXPERIMENTS
-    if exist([filename '.mat'], 'file')>0
-        DrawFormattedText(windowNo, 'There is already a file for this participant and date. Please check for errors.', 'center', 'center', [0 0 0]);
-        Screen('Flip', windowNo);
-        KbStrokeWait;
-        sca;
-        Priority(0);
-    end
+%     if exist([filename '.mat'], 'file')>0
+%         DrawFormattedText(windowNo, 'There is already a file for this participant and date. Please check for errors.', 'center', 'center', [0 0 0]);
+%         Screen('Flip', windowNo);
+%         KbStrokeWait;
+%         sca;
+%         Priority(0);
+%     end
     
     %% Present the Stimuli
-    
     
     %Loop RDK calculation and presentation by no of trials
     
@@ -126,6 +122,7 @@ try
             CoherenceDirection(1,(OrderOfTrials(1,j)))=180;
         end
         
+               
         TrialInBlockNo=1; %where we are in terms of trials in the block
         
         % TRIAL LOOP
@@ -155,6 +152,10 @@ try
             % store this trial's block no in the results structure
             results.BlockNo(1,TrialNo)=BlockNo;
             
+            % Choose a TMS Timepoint for this trial and store it
+            TMSTimepoint=TMSTimepointArray(1,(randi(numel(TMSTimepointArray))));
+            results.Timepoint(1,TrialNo)=TMSTimepoint;
+                        
             % assign coherent dots and their directions
             NumCoherentDots=round((Coherence/100)*NumDots); %how many dots of the total are going to be coherent
             
@@ -209,21 +210,20 @@ try
                 %Give a TMS pulse
                 
                 % send a TMS trigger - WILL HAVING THIS HERE SLOW DOWN THE FLIPS? I THINK SO!
-                if option.TMS == 1 && Timestamp == (StimulusOnset + TMS.dly - TMS.pre_rec) %is this still going to work if flips get missed?
+                if option.TMS == 1 && Timestamp == (StimulusOnset + (TMSTimepoint/1000)) %is this still going to work if flips get missed?
                     
-                    %start recording
                     outportb(888, 1);
-                    wait(1);
+                    wait(1); %duration of pulse in ms
                     outportb(888, 0);
                 end
                 
-                if option.TMS == 1 && Timestamp == (StimulusOnset + TMS.dly)
-                    
-                    %TMS pulse
-                    outportb(888, 2^TMS.port);
-                    wait (1); %duration of pulse in number of milliseconds
-                    outportb(888, 0);
-                end
+%                 if option.TMS == 1 && Timestamp == (StimulusOnset + TMS.dly)
+%                     
+%                     %TMS pulse
+%                     outportb(888, 1);
+%                     wait (1); %duration of pulse in number of milliseconds
+%                     outportb(888, 0);
+%                 end
                 
                 %For screenshotting:
                 %        imageArray = Screen('GetImage', windowNo);
@@ -285,9 +285,9 @@ try
     
     save (filename);
     
-    if option.TMS == 1
-        stop_cogent;
-    end
+%     if option.TMS == 1
+%         stop_cogent;
+%     end
     
 catch err
     disp('caught error');
@@ -304,10 +304,14 @@ end
 
 %multiple pulses
 
+%TMS in ITI - add an if ITI clause?
+%some no TMS trials? or are we doing behaviour separately?
+
 %Fixed duration experiment
 
 %Error message
 %'too long' trial break
+%fixation
 
 %Record any errors
 %Rationalise variables
