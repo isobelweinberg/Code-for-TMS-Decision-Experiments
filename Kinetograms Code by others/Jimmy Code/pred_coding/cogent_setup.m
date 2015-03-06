@@ -1,7 +1,7 @@
 % Scanning or not
-data.MEG = 1;
+data.MEG = 0;
 % Eyetracking or not
-data.eye_track = 1;
+data.eye_track = 0;
 % Background color
 bg_col = [0.2 0.2 0.2];
 fix_col = [0.5 0.5 0.5];
@@ -59,7 +59,7 @@ data.exp_start          = datestr(now,0);  % logs the date and time
 data.right = 1;
 data.left = 2;
 
-data.num_trials=180;
+data.num_trials=3;
 data.break_interval=25;
 
 whiteC = [1 1 1]; %white

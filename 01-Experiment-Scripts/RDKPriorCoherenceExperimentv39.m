@@ -8,33 +8,37 @@ try
     %% ParticipantDetails
     participant.Name='Isobel_Weinberg'; %use underscores
     participant.Age=25;
+    note=''; %appears at end of filename
     
     %% Experiment Type
     option.Training = 0;
     option.TMS = 0;
     
-    %% TMS Parameters
-%     TMS.dly = 1000; %TMS timepoint relative to stimulus parameters
-    
+   
     %% Experimental Parameters
-    TotalNumTrials=150;
+    %RDK design
     RDKWidth=200;
     DotDiameter=5;
     DotSpeed=120;%units: pixels/ms
     NumDots=200;
-    CoherenceArray=[5 10 15 30 60];%array of coherences you want to use, as a percentage
-    LeftProbabilityArray=[10 30 50]; %probability the RDK goes left, as a percentage
-    TrialsPerBlock=50;
-    TMSTimepointArray = []
+    %Block structure
+    TotalNumTrials=10;
+    TrialsPerBlock=5;
+    %Independent variables
+    CoherenceArray=[90];%array of coherences you want to use, as a percentage
+    LeftProbabilityArray=[10 50]; %probability the RDK goes left, as a percentage
+    TMSTimepointArray = [50 100];%in ms
+      
     %FixedDuration=1; %1 for yes, 0 for no
     %FixedDurationLengths=[400 1000]
     
     %% Setup
     
     %File Name
-    formatOut = 'ddmmyy';
-    date = datestr(now,formatOut);
-    filename = strcat(date,'_',participant.Name);
+    formatDate = 'ddmmyy';
+    date = datestr(now,formatDate);
+    time = datestr(now, 'HHMMSS');
+    filename = strcat(date,'_',participant.Name,'_',time, note);
     
     
     %KeyNames
@@ -66,7 +70,8 @@ try
     aperture=CenterRectOnPoint(aperture,xmiddle,ymiddle);
     
     %Seed the random number generator
-    rng('shuffle');
+%     rng('shuffle'); %modern
+    rand('seed', sum(100 * clock)); %legacy
     
     %How many blocks are there?
     TotalNumBlocks = TotalNumTrials/TrialsPerBlock;
@@ -94,7 +99,7 @@ try
     % Check for filename clash - MAKE SURE THIS IS UNCOMMENTED FOR THE
     % EXPERIMENTS
     if exist([filename '.mat'], 'file')>0
-        DrawFormattedText(windowNo, 'There is already a file for this participant and date. Please check for errors.', 'center', 'center', [0 0 0]);
+        DrawFormattedText(windowNo, 'There is already a file with this name. Please check for errors.', 'center', 'center', [0 0 0]);
         Screen('Flip', windowNo);
         KbStrokeWait;
         sca;
@@ -102,6 +107,10 @@ try
     end
     
     %% Present the Stimuli
+    
+    %Record start of experiment
+    ExperimentStart=datetime;
+    
     
     %Loop RDK calculation and presentation by no of trials
     
@@ -152,14 +161,15 @@ try
             % store this trial's block no in the results structure
             results.BlockNo(1,TrialNo)=BlockNo;
             
-            % Choose a TMS Timepoint
+            % Choose a TMS Timepoint for this trial and store it
             TMSTimepoint=TMSTimepointArray(1,(randi(numel(TMSTimepointArray))));
+            results.Timepoint(1,TrialNo)=TMSTimepoint;
                         
             % assign coherent dots and their directions
             NumCoherentDots=round((Coherence/100)*NumDots); %how many dots of the total are going to be coherent
             
-            %determine directions
-            dotdirections=rand(1,NumDots)*360; %   create matrix of random direction of motion between 0 to 360
+%             %determine directions
+%             dotdirections=rand(1,NumDots)*360; %   create matrix of random direction of motion between 0 to 360
             %make some dots left or rightgoing, up to the total number of coherent dots
             dotdirections(1,1:NumCoherentDots)=CoherenceDirection(1,TrialNo);
             
@@ -170,11 +180,17 @@ try
             
             latestdotpositions=dotpositions; %we'll use this in the loop
             
+            %Draw a fixation cross
+            %bit of an inaccurate way to do it? Incorporate it with
+            %timestamps and put it after the calculations
+%             Screen('DrawDots', windowNo, [xmiddle; ymiddle], 100, [1 0 0]);
+%             FixationOnTime=Screen('Flip', windowNo);
+%             WaitSecs=0.4;
+            
             %Timing stuff
             FlipInterval=Screen('GetFlipInterval', windowNo);% Find the interval between flips
-            %time=0;
             Timestamp=Screen('Flip', windowNo);
-            
+                        
             %Draw the first frame, and make a 'StimulusOnset' variable to use in the
             %RT calculation
             Screen('DrawDots', windowNo, dotpositions, DotDiameter, [0 0 0],...
@@ -204,15 +220,14 @@ try
                 %flip the screen at timestamp plus half a flipinterval. Update the
                 %'timestamp' variable with the time of this flip.
                 [Timestamp]=Screen('Flip', windowNo, Timestamp+(0.5*FlipInterval));
-                %time=time+ifi;
-                
+                                
                 %Give a TMS pulse
                 
                 % send a TMS trigger - WILL HAVING THIS HERE SLOW DOWN THE FLIPS? I THINK SO!
-                if option.TMS == 1 && Timestamp == (StimulusOnset + TMS.dly) %is this still going to work if flips get missed?
+                if option.TMS == 1 && Timestamp == (StimulusOnset + (TMSTimepoint/1000)) %is this still going to work if flips get missed?
                     
                     outportb(888, 1);
-                    wait(1); %duration of pulse in ms
+                    wait(1); %duration of pulse in ms %CHANGE TO WAITSECS?
                     outportb(888, 0);
                 end
                 
@@ -224,7 +239,7 @@ try
 %                     outportb(888, 0);
 %                 end
                 
-                %For screenshotting:
+                %For screenshoting:
                 %        imageArray = Screen('GetImage', windowNo);
                 %        imwrite(imageArray, 'examplestimulus.jpg')
                 
@@ -282,6 +297,7 @@ try
     %Priority 0
     Priority(0);
     
+    ExperimentEnd=datetime;
     save (filename);
     
 %     if option.TMS == 1
@@ -303,7 +319,8 @@ end
 
 %multiple pulses
 
-%TMS in ITI
+%TMS in ITI - add an if ITI clause?
+%some no TMS trials? or are we doing behaviour separately?
 
 %Fixed duration experiment
 
@@ -324,4 +341,17 @@ end
 %Threshold coherences to subject!!
 %Feedback!! - based on RT?
 
+%Do 1 flip and 1 ouportb before starting trials?
+
+%check Jimmy and Shadlen's RDKs - directions?
+%fixation
+
 %Inputs
+
+
+%should all be functions?
+%make triggers variables
+%make durations variables
+%make colours variables
+%visual angle
+%allocate all coherences etc in one go?
