@@ -1,25 +1,11 @@
-%% Functions
-function Width = CircleWidth(x, y, ApertureRadius)
-if y == 0
-    Width = 200;
-else
-    Width = y*tan(acos(y/ApertureRadius));
-end
-end
-
-
-Width = (ApertureRadius^2)-(^2)
-
-
 try
-    
     %% Inputs
     DotRadius = 2.5; %pixels
     CoherenceArray = [100]; %percent
     StimulusDuration = 400; %ms - how long participant gets to make a response
     NumDots = 300;
     ApertureRadius = 200; %pixels; radius of circular aperture for RDK
-    DotSpeed = 120; %pixels per second
+    DotSpeed = 1775; %pixels per second
     ITIDuration = 400; %lenth of intertrial interval, milliseconds
     FixationDuration = 400; %length of fixation, milliseconds
     FixationRadius = 2.5; %pixels; radius of fixation dot
@@ -28,7 +14,7 @@ try
     DotColour = [0 0 0]; %black
     
     %Use line below to make window transparent for debugging
-    %     PsychDebugWindowConfiguration();
+        PsychDebugWindowConfiguration();
     
     %% Load
     % call these once to avoid a slow first iteration
@@ -67,28 +53,39 @@ try
     data.Coherence = zeros(1, TotalNumTrials); %preallocate
     data.Direction = zeros(1, TotalNumTrials); %preallocate
     
+    %allocate non-coherent positions to all dots
+    Radii = rand(1, NumDots, TotalNumFrames, TotalNumTrials)*ApertureRadius; %generate some random distances from the centre of the aperture
+    Angles = rand(1, NumDots, TotalNumFrames, TotalNumTrials)*360; %generate some random angles
+    DotsXY(1, :, :, :) = Radii.*cosd(Angles);% fill with random X coordinates
+    DotsXY(2, :, :, :) = Radii.*sind(Angles); % fill random Ys
+    
     for TrialNo = 1:TotalNumTrials %find out how many nots need to be coherent on each trial
         data.Coherence(1, TrialNo) = CoherenceArray(1,(randi(numel(CoherenceArray)))); %pick a coherence at random from the Coherence Array for this trial
         data.Direction(1, TrialNo) = Directions(1, randi(numel(Directions))); %randomly allocate direction as L or R
         data.NumCoherentDots(1,TrialNo) = (data.Coherence(1,TrialNo)/100)*NumDots; %find out how many dots need to be coherent
-        
-        for DotNumber = 1:NumDots %allocate non-coherent positions to all dots
-            Radii = rand(1, NumDots, TotalNumFrames, TotalNumTrials)*ApertureRadius; %generate some random distances from the centre of the aperture
-            Angles = rand(1, NumDots, TotalNumFrames, TotalNumTrials)*360; %generate some random angles
-            DotsXY(1, :, :, :) = Radii.*cosd(Angles);% fill with random X coordinates
-            DotsXY(2, :, :, :) = Radii.*sind(Angles); % fill random Ys
-        end
-        
+                
         for DotNumber = 1:data.NumCoherentDots(1,TrialNo) % allocate coherent positions to a subset
             %coherent dots - their Y coord stays the same throughout
             DotsXY(2, DotNumber, 2:TotalNumFrames, TrialNo) = DotsXY(2, DotNumber, 1, TrialNo);
             %X coord incremements by a fixed amount (speed x time)
             for FrameNo = 2:TotalNumFrames
-                DotsXY(1, DotNumber, FrameNo, TrialNo) = DotsXY(1, DotNumber, FrameNo, TrialNo) + (data.Direction(1,TrialNo)*DotSpeed*IFI);
-                if data.Direction(1, TrialNo) == 1 && (DotsXY(1, DotNumber, FrameNo, TrialNo) + DotRadius) > ApertureRadius %if going off to right
-                    DotsXY(1, DotNumber, FrameNo, TrialNo) = -1*mod(DotsXY(1, DotNumber, FrameNo, TrialNo), ApertureRadius);
-                elseif data.Direction(1, TrialNo) == -1 && (DotsXY(1, DotNumber, FrameNo, TrialNo) - DotRadius) < ApertureRadius %if going off to the left
-                    DotsXY(1, DotNumber, FrameNo, TrialNo) = -1*mod(DotsXY(1, DotNumber, FrameNo, TrialNo), (-1*ApertureRadius));
+                DotsXY(1, DotNumber, FrameNo, TrialNo) = DotsXY(1, DotNumber, FrameNo-1, TrialNo) + (data.Direction(1,TrialNo)*DotSpeed*IFI);
+                %is the dot outside the circle?
+                y = DotsXY(2, DotNumber, FrameNo, TrialNo);
+                Width = sqrt(((ApertureRadius)^2)-((y)^2));
+                %Width = CircleWidth((DotsXY(2, DotNumber, FrameNo, TrialNo)), ApertureRadius); give the function the Y and the circle radius and it gives you the X coord of the circle at that point
+                if abs(DotsXY(1, DotNumber, FrameNo, TrialNo)) + DotRadius > Width %if outside circle
+                    if data.Direction(1, TrialNo) == -1 %if going Left, make the Width negative - need this to make the mod calc work
+                        Width = -1*Width;
+                    end
+                    XRemainder = mod((DotsXY(1, DotNumber, FrameNo, TrialNo)), Width);
+                    DotsXY(1, DotNumber, FrameNo, TrialNo) = XRemainder + Width;
+                    %                     if data.Direction(1, TrialNo) == 1 %if going Right
+                    %                         DotsXY(1, DotNumber, FrameNo, TrialNo) = XRemainder + Width;
+                    %                     elseif data.Direction(1, TrialNo) == -1 %if going Left
+                    %                         DotsXY(1, DotNumber, FrameNo, TrialNo) = XRemainder - Width;
+                    %                     end
+                    
                 end
             end
         end
@@ -96,7 +93,7 @@ try
     % now we have all the coordinates for the whole experiment - all that is
     % left is to draw them!
     
-    Width = 
+    
     
     %% Draw the stimuli
     for TrialNo=1:TotalNumTrials

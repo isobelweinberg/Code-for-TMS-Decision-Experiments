@@ -6,7 +6,7 @@ try
     StimulusDuration = 400; %ms - how long participant gets to make a response
     NumDots = 300;
     ApertureRadius = 200; %pixels; radius of circular aperture for RDK
-    DotSpeed = 120; %pixels per second
+    DotSpeed = 1; %pixels per second
     ITIDuration = 400; %lenth of intertrial interval, milliseconds
     FixationDuration = 400; %length of fixation, milliseconds
     FixationRadius = 2.5; %pixels; radius of fixation dot
@@ -15,7 +15,7 @@ try
     DotColour = [0 0 0]; %black
     
     %Use line below to make window transparent for debugging
-    %     PsychDebugWindowConfiguration();
+        PsychDebugWindowConfiguration();
     
     %% Load
     % call these once to avoid a slow first iteration
@@ -82,7 +82,7 @@ try
                     if data.Direction(1, TrialNo) == 1 %if going Right
                         DotsXY(1, DotNumber, FrameNo, TrialNo) = XRemainder - 200;
                     elseif data.Direction(1, TrialNo) == -1 %if going Left
-                        DotsXY(1, DotNumber, FrameNo, TrialNo) = Xremainder + 200;
+                        DotsXY(1, DotNumber, FrameNo, TrialNo) = XRemainder + 200;
                     end
                     
                 end
