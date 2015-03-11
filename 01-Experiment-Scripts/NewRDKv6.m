@@ -1,20 +1,20 @@
 try
     %% Inputs
     DotRadius = 2.5; %pixels
-    CoherenceArray = [100]; %percent
-    StimulusDuration = 400; %ms - how long participant gets to make a response
+    CoherenceArray = [5 50 95]; %percent
+    StimulusDuration = 800; %ms - how long participant gets to make a response
     NumDots = 300;
     ApertureRadius = 200; %pixels; radius of circular aperture for RDK
-    DotSpeed = 1775; %pixels per second
+    DotSpeed = 1500; %pixels per second
     ITIDuration = 400; %lenth of intertrial interval, milliseconds
     FixationDuration = 400; %length of fixation, milliseconds
     FixationRadius = 2.5; %pixels; radius of fixation dot
-    TotalNumTrials = 5; %how many trials
+    TotalNumTrials = 10; %how many trials
     BackgroundColour = [255]; %white
     DotColour = [0 0 0]; %black
     
     %Use line below to make window transparent for debugging
-        PsychDebugWindowConfiguration();
+%         PsychDebugWindowConfiguration();
     
     %% Load
     % call these once to avoid a slow first iteration
@@ -79,7 +79,7 @@ try
                         Width = -1*Width;
                     end
                     XRemainder = mod((DotsXY(1, DotNumber, FrameNo, TrialNo)), Width);
-                    DotsXY(1, DotNumber, FrameNo, TrialNo) = XRemainder + Width;
+                    DotsXY(1, DotNumber, FrameNo, TrialNo) = XRemainder - Width;
                     %                     if data.Direction(1, TrialNo) == 1 %if going Right
                     %                         DotsXY(1, DotNumber, FrameNo, TrialNo) = XRemainder + Width;
                     %                     elseif data.Direction(1, TrialNo) == -1 %if going Left
