@@ -177,30 +177,32 @@ try
     ExperimentStart=datetime;
     
     for BlockNo=1:TotalNumBlocks
-       if option.explicitprior ==1
-           %tell participant the prior for the next block
-       message = strcat('For the next', 32, num2str(TrialsPerBlock), ' trials, the probability the dot field will be moving LEFT is \n',...
-           32, num2str(data.LeftProbability(1, BlockNo)), '%, and the probability it will be moving RIGHT is', 32,...
-           num2str(100-data.LeftProbability(1, BlockNo)), '%');
-       LeftColour = (1*data.LeftProbability(1, BlockNo)/100)*[1 1 1]
-       RightColour = (1*(100-data.LeftProbability(1, BlockNo))/100)*[1 1 1]
-       RectSize = [0 0 100 100];
-       LeftRect = CenterRectOnPoint(RectSize, xmiddle, ymiddle);
-       %RightRect = 
-       
-       DrawFormattedText(windowNo, message, 'center', (ymiddle-250), [0 0 0], '', '', '', 2.5);
-       DrawFormattedText(windowNo, 'Left', (xmiddle-150), 'center', [0 0 0], '', '', '', 2.5);
-       DrawFormattedText(windowNo, strcat(num2str(data.LeftProbability(1, BlockNo)), '%'), (xmiddle-150), (ymiddle+50), [0 0 0], '', '', '', 2.5);
-       Screen(windowNo,'FillRect', LeftColour, LeftRect);
-       DrawFormattedText(windowNo, 'Right', (xmiddle+150), 'center', [0 0 0], '', '', '', 2.5);
-       DrawFormattedText(windowNo, strcat(num2str(100-data.LeftProbability(1, BlockNo)), '%'), (xmiddle+150), (ymiddle+50), [0 0 0], '', '', '', 2.5);
-       end
-       
-       Screen('Flip', windowNo);
-       
-                    KbStrokeWait;
+        if option.explicitprior == 1
+            %tell participant the prior for the next block
+            message = strcat('For the next', 32, num2str(TrialsPerBlock), ' trials, the probability the dot field will be moving LEFT is \n',...
+                32, num2str(data.LeftProbability(1, BlockNo)), '%, and the probability it will be moving RIGHT is', 32,...
+                num2str(100-data.LeftProbability(1, BlockNo)), '%');
+            LeftColour = (1*(100-data.LeftProbability(1, BlockNo))/100)*[255 255 255];
+            RightColour = (1*data.LeftProbability(1, BlockNo)/100)*[255 255 255];
+            RectSize = [0 0 100 100];
+            offset = 150;
+            LeftRect = CenterRectOnPoint(RectSize, (xmiddle-offset), (ymiddle+150));
+            RightRect = CenterRectOnPoint(RectSize, (xmiddle+offset), (ymiddle+150));
+            
+            DrawFormattedText(windowNo, message, 'center', (ymiddle-250), [0 0 0], '', '', '', 2.5);
+            Screen(windowNo,'FillRect', LeftColour, LeftRect);
+            Screen(windowNo,'FillRect', RightColour, RightRect);
+            DrawFormattedText(windowNo, 'Left', (xmiddle-offset), 'center', [0 0 0], '', '', '', 2.5);
+            DrawFormattedText(windowNo, strcat(num2str(data.LeftProbability(1, BlockNo)), '%'), (xmiddle-offset), (ymiddle+50), [0 0 0], '', '', '', 2.5);
+            DrawFormattedText(windowNo, 'Right', (xmiddle+offset), 'center', [0 0 0], '', '', '', 2.5);
+            DrawFormattedText(windowNo, strcat(num2str(100-data.LeftProbability(1, BlockNo)), '%'), (xmiddle+offset), (ymiddle+50), [0 0 0], '', '', '', 2.5);
+            DrawFormattedText(windowNo, 'Press any key to continue', 'center', ymiddle+200, [0 0 0], '', '', '', 2.5);
+            
+            Screen('Flip', windowNo);
+            KbStrokeWait;
+        end
         
-         data.LeftProbability(1, BlockNo)
+        data.LeftProbability(1, BlockNo)
         for TrialNo=1:TotalNumTrials
             data.times.trialstart(1,TrialNo) = GetSecs;
             Screen('DrawDots', windowNo, FixationXY, 2*FixationRadius, DotColour, [xmiddle ymiddle], 1);
@@ -295,7 +297,6 @@ end
 %%To DO
 
 %TMS pulses!
-
 
 %originating script data insert
 %trials for training
