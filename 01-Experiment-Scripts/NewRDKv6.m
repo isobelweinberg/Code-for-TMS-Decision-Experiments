@@ -1,4 +1,20 @@
+
+
 try
+    
+    clear all;
+    sca;
+    KbName('UnifyKeyNames');
+    
+    %% ParticipantDetails
+    participant.Name='Isobel_Weinberg'; %use underscores
+    participant.Age=25;
+    note=''; %appears at end of filename
+    
+    %% Experiment Type
+    option.Training = 0;
+    option.TMS = 0;
+    
     %% Inputs
     DotRadius = 2.5; %pixels
     CoherenceArray = [5 50 95]; %percent
