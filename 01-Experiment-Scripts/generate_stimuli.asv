@@ -39,7 +39,7 @@ for BlockNo=1:TotalNumBlocks
     % Set Probability the dots will go left - determined by block
     data.LeftProbability(1, BlockNo) = LeftProbabilityArray(1, (randi(numel(BlockNo))));
     
-    for TrialNo =(((BlockNo-1)*TrialsPerBlock)+1):(BlockNo*TrialsPerBlock) %find out how many nots need to be coherent on each trial
+    for TrialNo = 1:TrialsPerBlock %find out how many nots need to be coherent on each trial
         data.Coherence(1, TrialNo) = CoherenceArray(1,(randi(numel(CoherenceArray)))); %pick a coherence at random from the Coherence Array for this trial
         data.NumCoherentDots(1,TrialNo) = (data.Coherence(1,TrialNo)/100)*NumDots; %find out how many dots need to be coherent
         if TrialNo <= (data.LeftProbability(1, BlockNo)*TrialsPerBlock/100) %allocate direction

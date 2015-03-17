@@ -31,13 +31,29 @@ try
     participant.Name='Isobel_Weinberg'; %use underscores
     participant.Age=25;
     note=''; %appears at end of filename
+    participant.meanRT=[];
     
     %% === Experiment Type ====
     option.Training = 0;
     option.TMS = 0;
     option.explicitprior = 1;
+    option.scaletoRT = 0;
     
     %% ==== Inputs =====
+    
+    % Independent variables
+    CoherenceArray = [5 50 95]; %percent
+    LeftProbabilityArray=[10 50]; %probability the RDK goes left, as a percentage
+    TMSFixationTimepoints = []; %TMS timepoints in ms, relative to onset of Fixation
+    TMSStimTimepoints = [20 50 100]; %TMS timepoints in ms, relative to onset of Stim (or in % of meanRT, if scaletoRT is on)
+    TMSITITimepoints = [10]; %TMS timepoints in ms, relative to onset of ITI (end of feedback)
+    TMSFixationProb = 0;
+    TMSStimProb = 0.6;
+    TMSITIProb = 0.2;
+    NoTMSProb = 0.2;
+    TMSTimepointArray = [StimulusOnset, (StimulusOnset+20), (StimulusOnset+50), (ITIOnset+20)];%in ms 
+%     ProbabilityOfTMS = 80; %in percent, gives you TMS trials vs behavioural trials
+    TrialsPerCondition = 20;
     
     % Timings
     StimulusDuration = 1000; %ms - how long participant gets to make a response
@@ -46,16 +62,6 @@ try
     MinITIDuration = 500; %ms
     MaxITIDuration = 1000; %maximum lenth of intertrial interval, milliseconds
     
-    % Timing Calculations
-    StimulusOnset = FixationDuration;
-    ITIOnset = 
-        
-    % Independent variables
-    CoherenceArray = [5 50 95]; %percent
-    LeftProbabilityArray=[10 50]; %probability the RDK goes left, as a percentage
-    TMSTimepointArray = [StimulusOnset, (StimulusOnset+20), (StimulusOnset+50), (ITIOnset+20)];%in ms
-    ProbabilityOfTMS = 80; %in percent, gives you TMS trials vs behavioural trials
-    TrialsPerCondition = 20;
     
     % Stimulus Properties
     DotRadius = 2.5; %pixels
@@ -67,7 +73,7 @@ try
     DotColour = [0 0 0]; %black
     
     % TMS
-    triggerlength = 0.1; %stimulus duration, seconds
+    triggerlength = 0.1; %stimulus duration, MILLISECONDS
     
     % Directions    
     Directions = [-1, 1];
