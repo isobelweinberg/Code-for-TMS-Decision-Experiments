@@ -10,6 +10,7 @@ try
     global TotalNumBlocks;
     global LeftProbabilityArray;
     global CoherenceArray;
+    global TMSTimepointArray;
     global TrialsPerBlock;
     global DotSpeed;
     global DotRadius;
@@ -23,33 +24,44 @@ try
     global FixationDuration;
     global MaxITIDuration;
         
-    %% ParticipantDetails
+    %% === ParticipantDetails ===
     participant.Name='Isobel_Weinberg'; %use underscores
     participant.Age=25;
     note=''; %appears at end of filename
     
-    %% Experiment Type
+    %% === Experiment Type ====
     option.Training = 0;
     option.TMS = 0;
     option.explicitprior = 1;
     
-    %% Inputs
-    DotRadius = 2.5; %pixels
+    %% ==== Inputs =====
+    
+    % Timings
     StimulusDuration = 1000; %ms - how long participant gets to make a response
+    MaxITIDuration = 1000; %maximum lenth of intertrial interval, milliseconds
+    FixationDuration = 400; %length of fixation, milliseconds
+    FeedbackDuration -
+    
+    % Timing Calculations
+    StimulusOnset = FixationDuration;
+        
+    % Independent variables
+    CoherenceArray = [5 50 95]; %percent
+    LeftProbabilityArray=[10 50]; %probability the RDK goes left, as a percentage
+    TMSTimepointArray = [StimulusOnset, (StimulusOnset+20), (StimulusOnset+50), (ITIOnset+20)];%in ms
+    ProbabilityOfTMS = 80; %in percent, gives you TMS trials vs behavioural trials
+    TrialsPerCondition = 20;
+    
+    % Stimulus Properties
+    DotRadius = 2.5; %pixels
     NumDots = 300;
     ApertureRadius = 200; %pixels; radius of circular aperture for RDK
     DotSpeed = 1500; %pixels per second
-    MaxITIDuration = 1000; %maximum lenth of intertrial interval, milliseconds
-    FixationDuration = 400; %length of fixation, milliseconds
     FixationRadius = 2.5; %pixels; radius of fixation dot
     BackgroundColour = 255; %white
     DotColour = [0 0 0]; %black
-    %Independent variables
-    CoherenceArray = [5 50 95]; %percent
-    LeftProbabilityArray=[10 50]; %probability the RDK goes left, as a percentage
-    TMSTimepointArray = [50 100];%in ms
-    TrialsPerCondition = 20;
     
+    % Directions    
     Directions = [-1, 1];
     conventions.Direction = {'Left', -1; 'Right', 1}; %LEFT is -1; RIGHT is 1
     
@@ -126,14 +138,20 @@ try
         Priority(0);
     end
     
-    %% 
+    % Set up parallel port (using Data Acquisition Toolbox)
+    if option.TMS == 1
+        port = digitalio('parallel', 'LTP1'); %defines the port as an object called port
+        addline(port, 0:3, 'out'); %lines 0-3, making them writeable (output)
+    end   
     
     
     %% Load
     % call these once to avoid a slow first iteration
     GetSecs;
     KbCheck;
-    % also outportb
+    if option.TMS ==1
+        putvalue(port, 0); %sends 0 to the port
+    end
     
     %Seed the random number generator
     rng('shuffle'); %modern
@@ -170,9 +188,10 @@ end
 
 %TMS pulses!
 %TMS in ITI - add an if ITI clause?
+% make TMS pulses a fraction of RT
 %some no TMS trials? or are we doing behaviour separately?
 
-
+%ask for inputs - participant details, threshold, mean RT
 
 %originating script data insert
 %trials for training

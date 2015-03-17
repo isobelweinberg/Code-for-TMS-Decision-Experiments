@@ -78,8 +78,6 @@ for BlockNo=1:TotalNumBlocks
                 end
                 %                   [KeyPress, KeyPressTime, KeyCode] = KbCheck
             end
-            if data.TMSTimepoint(1, TrialNo)
-            
             data.times.RDKend(1,TrialNo) = Timestamp;
             KbQueueStop;
             
@@ -132,11 +130,9 @@ for BlockNo=1:TotalNumBlocks
                 results.Response(1,TrialNo)=NaN; %NaN means no response was made
                 results.ReactionTime(1,TrialNo)=NaN;
             end
-            data.times.ITIstart(1,TrialNo) = Screen('Flip', windowNo);
-            %if we are having TMS in the ITI, wait a bit, send trigger,and
-            %wait the remainder
-            if data.TMSTimepoint(1, TrialNo) >= (GetSecs-data.times.trialstart(1,TrialNo));
-                initialwait = data.TMSTimepoint(1, TrialNo) - (GetSecs-data.times.trialstart(1,TrialNo));
+            %if we are having TMS in the ITI, send trigger
+            if data.TMSTimepoint(1, TrialNo) >= GetSecs;
+                initialwait = data.TMSTimepoint(1, TrialNo) - GetSecs;
                 WaitSecs(initialwait/1000);
                 trigger;
                 WaitSecs(((MinITIDuration) + (rand*(MaxITIDuration-MinITIDuration)-initialwait-triggerlength))/1000);

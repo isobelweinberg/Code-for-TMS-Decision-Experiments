@@ -6,6 +6,7 @@ global ApertureRadius;
 global TotalNumBlocks;
 global LeftProbabilityArray;
 global CoherenceArray;
+global TMSTimepointArray;
 global TrialsPerBlock;
 global DotSpeed;
 global DotRadius;
@@ -24,6 +25,7 @@ DotsXY = zeros(2, NumDots, TotalNumFrames, TotalNumTrials); %preallocate
 
 data.Coherence = zeros(1, TotalNumTrials); %preallocate
 data.Direction = zeros(1, TotalNumTrials); %preallocate
+data.TMSTimepoint = NaN(1, TotalNumTrials); %preallocate
 
 %allocate non-coherent positions to all dots
 Radii = rand(1, NumDots, TotalNumFrames, TotalNumTrials)*ApertureRadius; %generate some random distances from the centre of the aperture
@@ -44,6 +46,12 @@ for BlockNo=1:TotalNumBlocks
             data.Direction(1, TrialNo) = 1; %right
         end
         
+        %choose a timepoint for TMS trigger
+        if option.TMS == 1 && randi(100) <= ProbabilityOfTMS %find out if this will be a TMS trial
+                data.TMSTimepoint(1, TrialNo) = TMSTimepointArray(1, randi(numel(TMSTimepointArray))); %pick a random TMS point
+%                 data.TMSFramepoint(1, TrialNo) = data.TMSTimepoint(1, TrialNo) - 
+        end
+                
         for DotNumber = 1:data.NumCoherentDots(1,TrialNo) % allocate coherent positions to a subset
             %coherent dots - their Y coord stays the same throughout
             DotsXY(2, DotNumber, 2:TotalNumFrames, TrialNo) = DotsXY(2, DotNumber, 1, TrialNo);
@@ -72,5 +80,9 @@ for BlockNo=1:TotalNumBlocks
     end
 end
 end
+
+
+
+
 % now we have all the coordinates for the whole experiment - all that is
 % left is to draw them!
