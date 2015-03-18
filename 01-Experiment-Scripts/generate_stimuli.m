@@ -29,7 +29,8 @@ data.TMSTimepoint = NaN(1, TotalNumTrials); %preallocate
 data.TMSTriggerTime = NaN(1, TotalNumTrials); %preallocate
 
 %allocate non-coherent positions to all dots
-Radii = rand(1, NumDots, TotalNumFrames, TotalNumTrials)*ApertureRadius; %generate some random distances from the centre of the aperture
+Radii = sqrt(rand(1, NumDots, TotalNumFrames, TotalNumTrials))*ApertureRadius; %generate some random distances from the centre of the aperture 
+%sqrt is needed to stop dots clustering in middle
 Angles = rand(1, NumDots, TotalNumFrames, TotalNumTrials)*360; %generate some random angles
 DotsXY(1, :, :, :) = Radii.*cosd(Angles);% fill with random X coordinates
 DotsXY(2, :, :, :) = Radii.*sind(Angles); % fill random Ys
@@ -39,19 +40,20 @@ for BlockNo=1:TotalNumBlocks
     data.LeftProbability(1, BlockNo) = LeftProbabilityArray(1, (randi(numel(BlockNo))));
     
     
-    for TrialNo =(((BlockNo-1)*TrialsPerBlock)+1):(BlockNo*TrialsPerBlock) %find out how many nots need to be coherent on each trial
+    for TrialNo =(((BlockNo-1)*TrialsPerBlock)+1):(BlockNo*TrialsPerBlock)
+        %set coherence for the trial
         if exist('participant.threshold', 'var')
             data.Coherence(1, TrialNo) = participant.threshold*100*CoherenceArray(1,(randi(numel(CoherenceArray))));
         else
             data.Coherence(1, TrialNo) = CoherenceArray(1,(randi(numel(CoherenceArray)))); %pick a coherence at random from the Coherence Array for this trial
         end
         data.NumCoherentDots(1,TrialNo) = (data.Coherence(1,TrialNo)/100)*NumDots; %find out how many dots need to be coherent
+        %set direction for the trial
         if randi(100) <= data.LeftProbability(1, BlockNo) 
             data.Direction(1, TrialNo) = -1; %left
         else
             data.Direction(1, TrialNo) = 1; %right
         end
-        
         %choose a timepoint for TMS trigger
         if option.TMS == 1 && randi(100) <= TMS.Probability %find out if this will be a TMS trial
             data.TMSindex(1, TrialNo) = randi(numel(TMS.Timepoints(1,:)));
