@@ -1,18 +1,17 @@
-function [FixationXY, DotsXY, data] = generate_stimuli(NumDots, TotalNumTrials)
+function [FixationXY, DotsXY, data] = generate_stimuli(NumDots, TotalNumTrials, TrialsPerBlock, TotalNumBlocks, CoherenceArray, LeftProbabilityArray)
 
 %Global Variables
 global TotalNumFrames;
 global ApertureRadius;
-global TotalNumBlocks;
-global LeftProbabilityArray;
-global CoherenceArray;
-global TMSTimepointArray;
-global TrialsPerBlock;
 global DotSpeed;
 global DotRadius;
 global IFI;
-global FixationDuration;
 global option;
+global participant;
+
+%Seed the random number generator
+    rng('shuffle'); %modern
+    %     rand('seed', sum(100 * clock)); %legacy
 
 % Prepare dot coordinates
 FixationXY = [0; 0];  % fixation spot is in middle of screen
@@ -39,10 +38,15 @@ for BlockNo=1:TotalNumBlocks
     % Set Probability the dots will go left - determined by block
     data.LeftProbability(1, BlockNo) = LeftProbabilityArray(1, (randi(numel(BlockNo))));
     
+    
     for TrialNo =(((BlockNo-1)*TrialsPerBlock)+1):(BlockNo*TrialsPerBlock) %find out how many nots need to be coherent on each trial
-        data.Coherence(1, TrialNo) = CoherenceArray(1,(randi(numel(CoherenceArray)))); %pick a coherence at random from the Coherence Array for this trial
+        if exist('participant.threshold', 'var')
+            data.Coherence(1, TrialNo) = participant.threshold*100*CoherenceArray(1,(randi(numel(CoherenceArray))));
+        else
+            data.Coherence(1, TrialNo) = CoherenceArray(1,(randi(numel(CoherenceArray)))); %pick a coherence at random from the Coherence Array for this trial
+        end
         data.NumCoherentDots(1,TrialNo) = (data.Coherence(1,TrialNo)/100)*NumDots; %find out how many dots need to be coherent
-        if TrialNo <= (data.LeftProbability(1, BlockNo)*TrialsPerBlock/100) %allocate direction
+        if randi(100) <= data.LeftProbability(1, BlockNo) 
             data.Direction(1, TrialNo) = -1; %left
         else
             data.Direction(1, TrialNo) = 1; %right

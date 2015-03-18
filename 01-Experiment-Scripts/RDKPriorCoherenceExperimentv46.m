@@ -36,9 +36,10 @@ try
     
     %% === Experiment Type ====
     option.Training = 0;
-    option.TMS = 1;
+    option.TMS = 0;
     option.explicitprior = 1;
     option.scaletoRT = 0;
+    option.estimatethreshold = 1;
     
     %% ==== Inputs =====
     
@@ -157,15 +158,7 @@ try
         sca;
         Priority(0);
     end
-    
-    if option.TMS == 1 && (TMS.FixationProb+TMS.StimProb+TMS.ITIProb+TMS.NoTMSProb)~=1
-        DrawFormattedText(windowNo, 'Error. \n The TMS probabilities do not add up \n Press any key', 'center', 'center', [0 0 0]);
-        Screen('Flip', windowNo);
-        KbStrokeWait;
-        sca;
-        Priority(0);
-    end
-    
+      
     
     %Make empty variable for Subject responses, RTs and RDK directions
     results.Response=zeros(1,TotalNumTrials);

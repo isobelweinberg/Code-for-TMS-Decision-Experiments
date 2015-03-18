@@ -26,6 +26,7 @@ try
     global MinITIDuration;
     global FeedbackDuration;
     global triggerlength;
+         
         
     %% === ParticipantDetails ===
     participant.Name='Isobel_Weinberg'; %use underscores
@@ -42,11 +43,10 @@ try
     %% ==== Inputs =====
     
     % Independent variables
-    CoherenceArray = [5 50 95]; %percent
+    CoherenceArray = [5 100]; %percent
     LeftProbabilityArray=[10 50]; %probability the RDK goes left, as a percentage
     %     TMSTimepointArray = [StimulusOnset, (StimulusOnset+20), (StimulusOnset+50), (ITIOnset+20)];%in ms 
-    
-    TrialsPerCondition = 20;
+    TrialsPerCondition = 2;
     %TMS
     TMS.Timepoints(1,:) = {20, 20, 40, 60}; %TMS timepoints, in ms, relative to...
     %NB if scaling to RT, give the timepoints relative to stim as
@@ -92,7 +92,7 @@ try
     switch option.TMS
         case 1
              TotalNumTrials = TrialsPerCondition*numel(CoherenceArray)*numel(LeftProbabilityArray)...
-                *numel(TMSTimepointArray)*numel(Directions)*(numel(TMS.Timepoints(1,:)+1));
+               *numel(Directions)*(numel(TMS.Timepoints(1,:))+1);
             %the 1 is for no TMS trials
         case 0
             TotalNumTrials = TrialsPerCondition*numel(CoherenceArray)*numel(LeftProbabilityArray)...
@@ -100,6 +100,8 @@ try
     end
     
     TrialsPerBlock = TotalNumTrials/numel(LeftProbabilityArray);
+    %How many blocks are there?
+    TotalNumBlocks = TotalNumTrials/TrialsPerBlock;
     
     %Scaling to RT
     if option.scaletoRT == 1
@@ -129,7 +131,7 @@ try
     Priority(1);
     
     %Use line below to make window transparent for debugging
-%         PsychDebugWindowConfiguration();
+        PsychDebugWindowConfiguration();
     
     Screen('Preference', 'SkipSyncTests', 0);
     
@@ -145,8 +147,7 @@ try
     xmiddle=middlerect(1,3)*0.5;
     ymiddle=middlerect(1,4)*0.5;
     
-    %How many blocks are there?
-    TotalNumBlocks = TotalNumTrials/TrialsPerBlock;
+    
     
     %Human error check
     if numel(LeftProbabilityArray)~=TotalNumBlocks
@@ -156,20 +157,13 @@ try
         sca;
         Priority(0);
     end
-    
-    if option.TMS == 1 && (TMS.FixationProb+TMS.StimProb+TMS.ITIProb+TMS.NoTMSProb)~=1
-        DrawFormattedText(windowNo, 'Error. \n The TMS probabilities do not add up \n Press any key', 'center', 'center', [0 0 0]);
-        Screen('Flip', windowNo);
-        KbStrokeWait;
-        sca;
-        Priority(0);
-    end
-    
+      
     
     %Make empty variable for Subject responses, RTs and RDK directions
     results.Response=zeros(1,TotalNumTrials);
     results.Direction=zeros(1,TotalNumTrials);
     results.ReactionTime=zeros(1,TotalNumTrials);
+    %==MORE EMPTY VARIABLES NEEDED
     
     % Check for filename clash - MAKE SURE THIS IS UNCOMMENTED FOR THE
     % EXPERIMENTS
