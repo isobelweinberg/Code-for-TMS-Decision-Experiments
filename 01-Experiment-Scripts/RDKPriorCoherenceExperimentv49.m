@@ -25,7 +25,7 @@ try
     global filename;
     global TMS;
     global port;
-    global triggerlength;
+    
     
     
     %% === ParticipantDetails ===
@@ -198,6 +198,8 @@ try
         thresholding.totalnumblocks = 1;
         thresholding.leftprobabilityarray = 50;
         thresholding.stepsize = 12;
+        thresholding.minimumreversals = 16;
+        thresholding.minimumtrials = 40;
         
         thresholding.trial = 1;
         thresholding.reversals = 0;
@@ -207,10 +209,11 @@ try
         Screen('Flip', windowNo);
         KbStrokeWait;
         
-        while thresholding.reversals < 16 || thresholding.trial < 40 %must have an even number of runs -> odd number of reversls
+        %==1-up-2-down (transformed up-down rule, Levitt, 1970) -> find 70.7% correct threshold
+                     
+        while thresholding.reversals <  thresholding.minimumreversals || thresholding.trial < thresholding.minimumtrials %must have an even number of runs -> odd number of reversls
             
             %set coherence
-            %==1-up-2-down (transformed up-down rule, Levitt, 1970) -> find 70.7% correct threshold
             if thresholding.trial == 1 || thresholding.trial == 2 %threshold is constant for trials 1 and 2
                 thresholding.coherence(1, thresholding.trial) = 70;
             elseif (thresholding.alldata.Response(1, (thresholding.trial-1)) == 1 && thresholding.alldata.Direction(1, (thresholding.trial-1)) == -1)...

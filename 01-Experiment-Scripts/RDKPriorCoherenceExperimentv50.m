@@ -25,7 +25,7 @@ try
     global filename;
     global TMS;
     global port;
-    global triggerlength;
+    
     
     
     %% === ParticipantDetails ===
@@ -198,24 +198,31 @@ try
         thresholding.totalnumblocks = 1;
         thresholding.leftprobabilityarray = 50;
         thresholding.stepsize = 12;
+        thresholding.minimumreversals = 16;
+        thresholding.minimumtrials = 40;
         
         thresholding.trial = 1;
         thresholding.reversals = 0;
+        
+        thresholding.uprule
+        thresholding.downrule
         
         %display intro screen
         DrawFormattedText(windowNo, 'Please decide which way the dots are moving and press a Left or Right arrow key in response. \n Press any key to continue.', 'center', 'center', [0 0 0]);
         Screen('Flip', windowNo);
         KbStrokeWait;
         
-        while thresholding.reversals < 16 || thresholding.trial < 40 %must have an even number of runs -> odd number of reversls
+        %% ==1-up-2-down (transformed up-down rule, Levitt, 1970) -> find 70.7% correct threshold
+                     
+        while thresholding.reversals <  thresholding.minimumreversals || thresholding.trial < thresholding.minimumtrials %must have an even number of runs -> odd number of reversls
             
             %set coherence
-            %==1-up-2-down (transformed up-down rule, Levitt, 1970) -> find 70.7% correct threshold
-            if thresholding.trial == 1 || thresholding.trial == 2 %threshold is constant for trials 1 and 2
+            if thresholding.trial < max(thresholding.uprule, thresholding.downrule) %threshold is constant for trials 1 and 2
                 thresholding.coherence(1, thresholding.trial) = 70;
             elseif (thresholding.alldata.Response(1, (thresholding.trial-1)) == 1 && thresholding.alldata.Direction(1, (thresholding.trial-1)) == -1)...
                     || (thresholding.alldata.Response(1, (thresholding.trial-1)) == 2 &&...
                     thresholding.alldata.Direction(1, (thresholding.trial-1)) == 1) %if last response was correct
+                %! if thresholding.uprule > 1
                 if (thresholding.alldata.Response(1, (thresholding.trial-2)) == 1 && thresholding.alldata.Direction(1, (thresholding.trial-2)) == -1)...
                         || (thresholding.alldata.Response(1, (thresholding.trial-2)) == 2 &&...
                         thresholding.alldata.Direction(1, (thresholding.trial-2)) == 1) %if response prior to that was also correct
@@ -328,17 +335,17 @@ catch err
     rethrow (err);
 end
 
-%%To DO
-
-1. Get rid of global variables
-2. Change data collection to matrix
-3. Visual anagle
-4. num coherent dots - sometimes not a whole number - is this causing problems?
-5. *Threshold for more than one threshold
-6. ask for inputs - participant details, threshold, mean RT
-7. originating script data insert
-8. Reward based on mean RT?
-9. What to do about/how to calculate mean RT
+%% ===To Do ====
+% 
+% 1. Get rid of global variables
+% 2. Change data collection to matrix
+% 3. Visual anagle
+% 4. num coherent dots - sometimes not a whole number - is this causing problems?
+% 5. *Threshold for more than one threshold
+% 6. ask for inputs - participant details, threshold, mean RT
+% 7. originating script data insert
+% 8. Reward based on mean RT?
+% 9. What to do about/how to calculate mean RT
 
 %Record any errors
 %Rationalise variables
